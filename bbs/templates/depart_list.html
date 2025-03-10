@@ -9,6 +9,21 @@
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                 新建
             </a>
+            <div style="float: right;width: 300px">
+                <form method="get">
+                    <div class="input-group">
+
+                        <input type="text" name="q" class="form-control" placeholder="请输入名称"
+                               value="{{ search_data }}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="bs-example" data-example-id="panel-without-body-with-table">
@@ -44,7 +59,9 @@
                 </table>
             </div>
         </div>
-
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
 
     </div>
 

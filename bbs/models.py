@@ -22,3 +22,27 @@ class UserInfo(models.Model):
     # 级联删除 on_delete=models.CASCADE
     # 置空 on_delete=models.SET_NULL 但是必须和null=True, blank=True配合使用，因为你得支持为null
     depart = models.ForeignKey(to='Department', to_field='id', on_delete=models.CASCADE)
+
+
+class Case(models.Model):
+    """测试用例表"""
+    number = models.CharField(verbose_name='用例编号', max_length=11)
+    bug_no = models.IntegerField(verbose_name='缺陷编号', null=True, blank=True)
+    name = models.CharField(verbose_name='用例名称', max_length=20)
+    step = models.CharField(verbose_name='步骤', max_length=150)
+    expect = models.CharField(verbose_name='期望结果', max_length=100)
+    actual = models.CharField(verbose_name='实际结果', max_length=100)
+    author = models.CharField(verbose_name='作者', max_length=20)
+    priority_choices = (
+        (1, 'P0'),
+        (2, 'P1'),
+        (3, 'P2'),
+        (4, 'P3'),
+    )
+    priority = models.SmallIntegerField(verbose_name='优先级', choices=priority_choices, default=1)
+    status_choices = (
+        (1, '未执行'),
+        (2, '通过'),
+        (3, '未通过'),
+    )
+    status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default=1)

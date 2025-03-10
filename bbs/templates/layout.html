@@ -10,6 +10,7 @@
             border-radius: 0;
         }
     </style>
+    {% block css %}{% endblock %}
 </head>
 <body>
 
@@ -30,6 +31,7 @@
             <ul class="nav navbar-nav">
                 <li><a href="/depart/list/">部门管理</a></li>
                 <li><a href="/user/list/">用户管理</a></li>
+                <li><a href="/case/list/">用例管理</a></li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -58,5 +60,6 @@
 
 <script src="{% static 'js/jquery-3.6.3.min.js' %}"></script>
 <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.js' %}"></script>
+{% block js %}{% endblock %}
 </body>
 </html>

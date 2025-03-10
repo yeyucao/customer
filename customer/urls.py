@@ -21,10 +21,18 @@ from bbs import views
 
 urlpatterns = [
     #    path("admin/", admin.site.urls),
+    # 用例管理
+    path('case/list/', views.case_list),
+    path('case/add/', views.case_add),
+    path('case/<int:nid>/edit/', views.case_edit),
+    path('case/<int:nid>/delete/', views.case_delete),
+
+    # 项目管理
     path('depart/list/', views.depart_list),
     path('depart/add/', views.depart_add),
     path('depart/delete/', views.depart_delete),
     path('depart/<int:nid>/edit/', views.depart_edit),
+
     # 用户管理
     path('user/list/', views.user_list),
     path('user/add/', views.user_add),
