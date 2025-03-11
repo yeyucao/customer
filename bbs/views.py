@@ -3,10 +3,12 @@ from django.shortcuts import render, redirect, HttpResponse
 from bbs import models
 from django import forms
 from django.core.validators import RegexValidator
+from bbs.utils.form import AdminEditModelForm, AdminModelForm
 from bbs.utils.pagination import Pagination
 
 
 # Create your views here.
+
 
 
 def depart_list(request):
@@ -289,3 +291,69 @@ def case_delete(request, nid):
     # 根据nid去数据库获取所在行数据进行删除
     models.Case.objects.filter(id=nid).delete()
     return redirect('/case/list')
+
+
+def admin_list(request):
+    """管理员列表"""
+    # 查询所有用例
+    data_dict = {}
+    # 获取浏览器传过来的值
+    search_data = request.GET.get('q', "")
+    if search_data:
+        data_dict["login_name__contains"] = search_data
+    depart_set = models.Admin.objects.filter(**data_dict)
+    # 实例化分页方法
+    page_object = Pagination(request, depart_set)
+    context = {
+        "search_data": search_data,  # 查询
+        "depart_set": page_object.page_queryset,  # 分完页的数据
+        "page_string": page_object.html()  # 页码
+    }
+    return render(request, 'admin_list.html', context)
+
+
+def admin_add(request):
+    """新增管理员"""
+    if request.method == 'GET':
+        form = AdminModelForm()
+        return render(request, 'change.html', {"form": form, "title": "新增管理员"})
+    # POST 请求提交的数据，数据校验
+    form = AdminModelForm(data=request.POST)
+    if form.is_valid():
+        # 如果数据合法，这里判断的是所有字段不能为空，则存储到数据库
+        # models.UserInfo.objects.create(..) 常规存储方式
+        form.save()
+        return redirect('/admin/list')
+    # 如果不满足if判断进入到else返回错误信息
+    return render(request, 'change.html', {"form": form, "title": "新增管理员"})
+
+
+def admin_edit(request, nid):
+    """编辑管理"""
+    # 根据nid去数据库获取所在行数据
+    row_object = models.Admin.objects.filter(id=nid).first()
+    if not row_object:
+        # return redirect('/admin/list')
+        render(request, 'error.html', {'msg': "数据不存在"})
+    if request.method == 'GET':
+        form = AdminEditModelForm(instance=row_object)
+        return render(request, 'change.html', {"form": form, "title": "编辑管理员"})
+    # POST 请求提交的数据，数据校验
+    form = AdminEditModelForm(data=request.POST, instance=row_object)
+    if form.is_valid():
+        form.save()
+        return redirect('/admin/list')
+        # 如果不满足if判断进入到else返回错误信息
+    return render(request, 'change.html', {"form": form, "title": "编辑管理员"})
+
+
+def admin_delete(request, nid):
+    """删除管理员"""
+    # 根据nid去数据库获取所在行数据进行删除
+    models.Admin.objects.filter(id=nid).delete()
+    return redirect('/admin/list')
+
+
+def admin_reset(request):
+    return None
+

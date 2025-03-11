@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -46,3 +47,12 @@ class Case(models.Model):
         (3, '未通过'),
     )
     status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default=1)
+
+class Admin(models.Model):
+    """管理员表"""
+    login_name  = models.CharField(verbose_name='用户名', max_length=28)
+    name = models.CharField(verbose_name='姓名', max_length=22, null=True, blank=True)
+    password = models.CharField(verbose_name='密码', max_length=64)
+    mobile = models.CharField(verbose_name='手机号', max_length=22, null=True, blank=True)
+    creation_time = models.DateTimeField(_('creation time'), default=now)
+    last_modify_time = models.DateTimeField(_('last modify time'), default=now)

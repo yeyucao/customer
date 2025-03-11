@@ -16,11 +16,26 @@ Including another URLconf
 """
 
 # from django.contrib import admin
-from django.urls import path
-from bbs import views
+from bbs import views, account
+from django.urls import path, include
 
 urlpatterns = [
     #    path("admin/", admin.site.urls),
+
+    # 登录
+    path('login/', account.login),
+    #注销
+    path('logout/', account.logout),
+    # 验证码
+    path('captcha/', include('captcha.urls')),
+    path('refresh_captcha/', account.refresh_captcha),
+
+    # 管理员管理
+    path('admin/list/', views.admin_list),
+    path('admin/add/', views.admin_add),
+    path('admin/<int:nid>/edit/', views.admin_edit),
+    path('admin/<int:nid>/delete/', views.admin_delete),
+    path('admin/<int:nid>/reset/', views.admin_reset),
     # 用例管理
     path('case/list/', views.case_list),
     path('case/add/', views.case_add),

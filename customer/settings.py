@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "bbs.apps.BbsConfig"
+    "bbs.apps.BbsConfig",
+    "captcha" #验证码
 ]
 
 MIDDLEWARE = [
@@ -47,6 +48,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "bbs.middleware.auth.AuthMiddleware"
 ]
 
 ROOT_URLCONF = "customer.urls"
@@ -134,3 +136,10 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+#字母验证码
+CAPTCHA_IMAGE_SIZE = (80, 45)   # 设置 captcha 图片大小
+CAPTCHA_LENGTH = 4   # 字符个数
+CAPTCHA_TIMEOUT = 1   # 超时(minutes)
+
+

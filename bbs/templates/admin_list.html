@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+{% block title %}
+    <title>管理员列表</title>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px" class="clearfix">
+            <a class="btn btn-success" href="/admin/add/">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                新建
+            </a>
+
+            <div style="float: right;width: 300px">
+                <form method="get">
+                    <div class="input-group">
+
+                        <input type="text" name="q" class="form-control" placeholder="请输入登陆账号"
+                               value="{{ search_data }}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <div class="bs-example" data-example-id="panel-without-body-with-table">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                    管理员列表
+                </div>
+
+                <!-- Table -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>登录账号</th>
+                        <th>姓名</th>
+                        <th>密码</th>
+                        <th>手机号</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for obj in depart_set %}
+                        <tr>
+                            <th scope="row">{{ obj.id }}</th>
+                            <td>{{ obj.login_name }}</td>
+                            <td>{{ obj.name }}</td>
+                            <td>{{ obj.password }}</td>
+                            <td>{{ obj.mobile }}</td>
+                            <td>{{ obj.creation_time|date:"Y-m-d H:i:s" }}</td>
+                            <td>
+                                <a class="btn btn-primary btn-xs" href="/admin/{{ obj.id }}/edit/">编辑</a>
+                                <a class="btn btn-danger btn-xs" href="/admin/{{ obj.id }}/delete/">删除</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
+
+
+    </div>
+
+{% endblock %}
