@@ -3,6 +3,7 @@ from django.conf import settings
 
 
 def md5(data_string):
+    print(settings.SECRET_KEY)
     obj = hashlib.md5(settings.SECRET_KEY.encode('utf-8'))
     obj.update(data_string.encode('utf-8'))
 
