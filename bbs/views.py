@@ -357,3 +357,28 @@ def admin_delete(request, nid):
 def admin_reset(request):
     return None
 
+from django.shortcuts import render
+
+
+def bad_request(request, exception):
+    """ 400 error handler. """
+    return render(request, '404.html')
+
+
+def permission_denied(request, exception):
+    """ Permission denied (403) handler. """
+    return render(request, '404.html')
+
+
+def page_not_found(request, exception):
+    """
+    404 handler.
+    """
+    return render(request, '404.html')
+
+
+def server_error(request):
+    """
+    500 error handler.
+    """
+    return render(request, '404.html')

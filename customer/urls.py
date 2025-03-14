@@ -14,9 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.global_settings import STATIC_ROOT
+from django.views.static import serve
+
 # from django.contrib import admin
 from bbs import views, account
-from commonts.views import isRequestUrl
 from django.urls import path, include
 
 urlpatterns = [
@@ -54,5 +57,7 @@ urlpatterns = [
     path('user/add/', views.user_add),
     path('user/model/form/add/', views.user_model_form_add),  # 新方法实现
     path('user/<int:nid>/edit/', views.user_edit),
-    path('user/<int:nid>/delete/', views.user_delete)  # 与部门删除方式不一样
+    path('user/<int:nid>/delete/', views.user_delete),  # 与部门删除方式不一样
+
+
 ]
