@@ -21,7 +21,6 @@ def login(request):
     form = LoginForm(data=request.POST)
 
     if form.is_valid():
-        print(form.cleaned_data)
         search_dict = dict()
         search_dict["login_name"] = form.cleaned_data["login_name"]
         search_dict["password"] = form.cleaned_data["password"]
