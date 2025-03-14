@@ -19,13 +19,13 @@ from django.conf.global_settings import STATIC_ROOT
 from django.views.static import serve
 
 # from django.contrib import admin
-from bbs import views, account
+from bbs import views, account, index
 from django.urls import path, include
 
 urlpatterns = [
     #    path("admin/", admin.site.urls),
 
-
+    path('api/', index.AppletApi.isRequestUrl),
     # 登录
     path('login/', account.login),
     #注销
