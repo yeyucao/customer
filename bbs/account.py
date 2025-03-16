@@ -4,84 +4,92 @@ from turtle import pd
 
 from captcha.helpers import captcha_image_url
 from captcha.models import CaptchaStore
+from django import forms
 from django.http import HttpResponse
 from django.views import View
 
 from bbs import models
-from bbs.utils.form import LoginForm
+from bbs.utils.bootstrap import BootStrapForm
+from bbs.utils.code import check_code
+from bbs.utils.encrypt import md5
 from django.shortcuts import render, redirect
 
 
+class LoginForm(BootStrapForm):
+    login_name = forms.CharField(
+        label="用户名",
+        widget=forms.TextInput,
+        required=True
+    )
+    password = forms.CharField(
+        label="密码",
+        widget=forms.PasswordInput(render_value=True),
+        required=True
+    )
+
+    code = forms.CharField(
+        label="验证码",
+        widget=forms.TextInput,
+        required=True
+    )
+
+    def clean_password(self):
+        pwd = self.cleaned_data.get("password")
+        return md5(pwd)
+
 
 def login(request):
-    """登录"""
-    if request.method == 'GET':
+    """ 登录 """
+    if request.method == "GET":
         form = LoginForm()
-        return render(request, 'login.html', {"form": form})
+        return render(request, 'login.html', {'form': form})
+
     form = LoginForm(data=request.POST)
-
     if form.is_valid():
-        search_dict = dict()
-        search_dict["login_name"] = form.cleaned_data["login_name"]
-        search_dict["password"] = form.cleaned_data["password"]
-        admin_object = models.Admin.objects.filter(**search_dict).first()
+        # 验证码的校验
+        user_input_code = form.cleaned_data.pop('code')
+        code = request.session.get('image_code', "")
+        if code.upper() != user_input_code.upper():
+            form.add_error("code", "验证码错误")
+            return render(request, 'login.html', {'form': form})
+
+        admin_object = models.Admin.objects.filter(**form.cleaned_data).first()
         if not admin_object:
-            form.add_error("login_name", "用户名或密码错误！")  # 主动抛出错误显示位置
-            return render(request, 'login.html', {"form": form})
-        # 用户名密码正确
-        # 网站生成随机字符串，写到cookie，再写到session
-        request.session['info'] = {
-            "id": admin_object.id,
-            "login_name": admin_object.login_name,
-            "name": admin_object.mobile
-        }
-        return redirect('/admin/list')
-    # 如果不满足if判断进入到else返回错误信息
-    return render(request, 'login.html', {"form": form})
+            form.add_error("password", "用户名或密码错误")
+            # form.add_error("username", "用户名或密码错误")
+            return render(request, 'login.html', {'form': form})
 
-# 创建验证码
-def captcha():
-    hashkey = CaptchaStore.generate_key()   #验证码答案
-    image_url = captcha_image_url(hashkey)  #验证码地址
-    captcha = {'hashkey': hashkey, 'image_url': image_url}
-    return captcha
+        # 用户名和密码正确
+        # 网站生成随机字符串; 写到用户浏览器的cookie中；在写入到session中；
+        request.session["info"] = {'id': admin_object.id, 'name': admin_object.login_name}
+        # session可以保存7天
+        request.session.set_expiry(60 * 60 * 24 * 7)
 
-#刷新验证码
-def refresh_captcha(request):
-    return HttpResponse(json.dumps(captcha()), content_type='application/json')
+        return redirect("/admin/list/")
+
+    return render(request, 'login.html', {'form': form})
 
 
-# 验证验证码
-def jarge_captcha(captchaStr, captchaHashkey):
-    if captchaStr and captchaHashkey:
-        try:
-            # 获取根据hashkey获取数据库中的response值
-            get_captcha = CaptchaStore.objects.get(hashkey=captchaHashkey)
-            if get_captcha.response == captchaStr.lower():     # 如果验证码匹配
-                return True
-        except:
-            return False
-    else:
-        return False
+def image_code(request):
+    """ 生成图片验证码 """
 
+    # 调用pillow函数，生成图片
+    img, code_string = check_code()
 
-class IndexView(View):
-    def get(self, request):
-        hashkey = CaptchaStore.generate_key()  # 验证码答案
-        image_url = captcha_image_url(hashkey)  # 验证码地址
-        captcha = {'hashkey': hashkey, 'image_url': image_url}
-        return render(request, "login.html", locals())
-    def post(self,request):
-        capt=request.POST.get("captcha",None)         #用户提交的验证码
-        key=request.POST.get("hashkey",None)          #验证码答案
-        if jarge_captcha(capt,key):
-            return  HttpResponse("验证码正确")
-        else:
-            return HttpResponse("验证码错误")
+    # 写入到自己的session中（以便于后续获取验证码再进行校验）
+    request.session['image_code'] = code_string
+    # 给Session设置60s超时
+    request.session.set_expiry(60)
+
+    stream = BytesIO()
+    img.save(stream, 'png')
+    return HttpResponse(stream.getvalue())
 
 
 def logout(request):
-    """注销"""
+    """ 注销 """
+
+    request.session.clear()
 
     return redirect('/login/')
 

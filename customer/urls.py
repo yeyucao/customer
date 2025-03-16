@@ -31,8 +31,7 @@ urlpatterns = [
     #注销
     path('logout/', account.logout),
     # 验证码
-    path('captcha/', include('captcha.urls')),
-    path('refresh_captcha/', account.refresh_captcha),
+    path('image/code/', account.image_code),
 
     # 管理员管理
     path('admin/list/', views.admin_list),
