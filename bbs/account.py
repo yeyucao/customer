@@ -1,12 +1,7 @@
-import json
 from io import BytesIO
-from turtle import pd
 
-from captcha.helpers import captcha_image_url
-from captcha.models import CaptchaStore
 from django import forms
 from django.http import HttpResponse
-from django.views import View
 
 from bbs import models
 from bbs.utils.bootstrap import BootStrapForm

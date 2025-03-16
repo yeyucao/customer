@@ -1,4 +1,3 @@
-from captcha.fields import CaptchaField
 from django import forms
 from bbs.utils.bootstrap import BootStrapModelForm, BootStrapForm
 from bbs.utils.encrypt import md5
@@ -78,29 +77,3 @@ class AdminResetModelForm(BootStrapModelForm):
         # return 什么以后就保存到数据库是什么
         return confirm
 
-
-class LoginForm(BootStrapForm):
-    login_name = forms.CharField(
-        label="登录账户",
-        widget=forms.TextInput(),
-        required=True
-
-    )
-    password = forms.CharField(
-        label="密码",
-        widget=forms.PasswordInput(),
-        required=True
-    )
-    code = CaptchaField(
-        label="请输入验证码",
-        required=True,
-        error_messages={
-            "invalid": "验证码错误！"
-        }
-
-    )
-
-
-    def clean_password(self):
-        pwd = self.cleaned_data.get("password")
-        return md5(pwd)
