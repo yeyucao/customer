@@ -27,7 +27,7 @@ urlpatterns = [
 
     path('api/', index.AppletApi.isRequestUrl),
     # 登录
-    path('login/', account.login),
+    path('bbs/login/', account.login),
     #注销
     path('logout/', account.logout),
     # 验证码
