@@ -91,5 +91,5 @@ def logout(request):
 
     request.session.clear()
 
-    return redirect('/login/')
+    return redirect('/bbs/login/')
 

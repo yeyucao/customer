@@ -29,7 +29,7 @@ urlpatterns = [
     # 登录
     path('bbs/login/', account.login),
     #注销
-    path('logout/', account.logout),
+    path('bbs/logout/', account.logout),
     # 验证码
     path('image/code/', account.image_code),
 

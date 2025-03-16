@@ -15,4 +15,4 @@ class AuthMiddleware(MiddlewareMixin):
         if info_dict:
             return
         # 3、没有登录过，返回登录界面
-        return redirect('/index/login/')
+        return redirect('/bbs/login/')
