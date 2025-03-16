@@ -15,12 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.global_settings import STATIC_ROOT
-from django.views.static import serve
-
-# from django.contrib import admin
+from django.views.static import serve as static_serve
+from django.conf.urls.static import static
 from bbs import views, account, index
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 urlpatterns = [
     #    path("admin/", admin.site.urls),
@@ -58,5 +56,6 @@ urlpatterns = [
     path('user/<int:nid>/edit/', views.user_edit),
     path('user/<int:nid>/delete/', views.user_delete),  # 与部门删除方式不一样
 
-
+    re_path(r"^static/(?P<path>.*)$", static_serve,
+            {"document_root": settings.STATIC_ROOT}, name='static'),
 ]
