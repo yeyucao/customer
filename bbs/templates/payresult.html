@@ -1,13 +1,51 @@
-{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>购买成功-电小服智能客服</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    <style>
+        .account {
+            width: 400px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            box-shadow: 5px 5px 20px #aaa;
 
-<div class="list_module">
-    <table class="table table-bordered table-striped">
-        {% for k,v in result.GET.items %}
-                <tr>
-                    <th>{{ k }}:</th>
-                    <td>{{ v }}</td>
-                </tr>
-        {% endfor %}
-    </table>
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 100px;
+            padding: 20px 40px;
+        }
+
+        .account h2 {
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="account">
+    <h2>购买成功</h2>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="order-info">
+                <p class="info"><b>订单号：</b><span>{{ trade_no }}</span></p>
+                <p class="info"><b>付款时间：</b><span>{{ last_modify_time }}</span></p>
+                <p class="info"><b>VIP会员：</b><span>{{ remark }}</span></p>
+                <p class="info"><b>交易金额：</b><span>{{ price }}</span></p>
+
+            </div>
+            <div class="col-md-6">
+                <p></p>
+                    <hr>
+                    <p class="mb-0">点击下面的按钮继续。</p>
+                    <a href="/index/login/" class="btn btn-primary">重新登陆</a>
+
+            </div>
+        </div>
+    </div>
 </div>
-{% endblock %}
+
+</body>
+</html>

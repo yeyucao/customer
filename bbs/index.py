@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from bbs import models
 from bbs.models import UserManager
-from bbs.payment.utils import my_ali_pay, redKey
+from bbs.payment.utils import my_ali_pay
 from bbs.utils.bootstrap import BootStrapForm
 from bbs.utils.code import check_code
 from bbs.utils.encrypt import md5
@@ -112,7 +112,7 @@ def index_login(request):
         request.session["info"] = {'id': user_manager_object.id, 'name': user_manager_object.login_name}
         request.session.set_expiry(60 * 60 * 24)
         user_manager_object.password = None
-
+        user_manager_object.expiry_date = user_manager_object.expiry_date.strftime("%Y-%m-%d %H:%M:%S")
         memberModel = models.MemberModel.objects.filter(is_delete__exact=1).values('id', 'name', 'price', 'remark')
         return render(request, 'user_info.html', {'user': user_manager_object,'members':memberModel})
 
@@ -282,50 +282,24 @@ def pay_result(request):
     if request.method == "GET":
         data = request.GET.dict()
 
-        ali_pay = AliPay(
-                appid=settings.ALI_PAY_APP_ID,
-                app_notify_url=None,
-                app_private_key_string=settings.ALIPAY_PRIVATE_KEY_STRING,
-                alipay_public_key_string=settings.ALIPAY_PUBLIC_KEY_STRING,
-                sign_type="RSA2",
-            )
+        ali_pay = my_ali_pay()
         sign = data.pop('sign', None)
         success = ali_pay.verify(data, sign)
-        print("同步回调验签状态: ", success)
+        print("同步回调验签状态: ", data)
         if success:
-            # 此处写支付验签成功的相关业务逻辑
-            return JsonResponse(dict(message="支付成功"))
+            # 修改订单状态
+            models.MemberRecord.objects.filter(order_no=data.get('out_trade_no')).update(pay_status=1,last_modify_time=timezone.now())
+            record = models.MemberRecord.objects.filter(order_no__exact=data.get('out_trade_no')).first()
+            model =models.MemberModel.objects.filter(id__exact=record.memer_id).first()
+            user = models.UserManager.objects.filter(id__exact=record.user_id).first()
+            months_later = user.expiry_date + timedelta(days=model.quantity * 30)
+            models.UserManager.objects.filter(id__exact=record.user_id).update(expiry_date=months_later,last_modify_time=timezone.now())
+            return render(request, 'payresult.html',{'remark':model.remark,
+                                                     'trade_no':data.get('out_trade_no'),
+                                                     'price':record.price,
+                                                      'last_modify_time':record.last_modify_time.strftime('%Y-%m-%d %H:%M:%S')})
 
         return JsonResponse(dict(message="支付失败"))
 
     return JsonResponse(dict(message="支付失败"))
 
-
-@csrf_exempt
-@atomic()
-def update_order(request):
-    """
-    支付成功后，支付宝服务器异步通知回调（用于修改订单状态）
-    :return: success or fail
-    """
-    if request.method == "POST":
-
-        body_str = request.body.decode('utf-8')
-        data = parse.parse_qs(body_str)
-        # data = parse.parse_qs(parse.unquote(body))  # 前端回传的url如果被编码，这里需要用unquote解码再转换成字典
-        data = {k: v[0] for k, v in data.items()}
-
-        ali_pay = my_ali_pay()
-        sign = data.pop('sign', None)
-        success = ali_pay.verify(data, sign)  # 返回验签结果, True/False
-        print("异步通知验证状态: ", success)
-        if success:
-            # 此处写支付验签成功修改订单状态相关业务逻辑
-            return HttpResponse('success')  # 返回success给支付宝服务器, 若支付宝收不到success字符会重复发送通知
-        return HttpResponse('fail')
-
-    return HttpResponse('fail')
-
-
-def payresult(request):
-    return render(request,"payresult.html")
