@@ -1,0 +1,13 @@
+{% block content %}
+
+<div class="list_module">
+    <table class="table table-bordered table-striped">
+        {% for k,v in result.GET.items %}
+                <tr>
+                    <th>{{ k }}:</th>
+                    <td>{{ v }}</td>
+                </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

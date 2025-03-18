@@ -12,7 +12,7 @@ class BaseModel(models.Model):
     delete_choices = ((0, '删除'), (1, '正常'))
     is_delete = models.SmallIntegerField(verbose_name='逻辑删除', choices=delete_choices, default=1)
     creation_time = models.DateTimeField(_('creation time'), default=now)
-    last_modify_time = models.DateTimeField(_('last modify time'), default=now)
+    last_modify_time = models.DateTimeField(_('last modify time'), auto_now=True)
 
     class Meta:
         abstract = True
@@ -101,7 +101,9 @@ class MemberRecord(BaseModel):
     pay_type = models.SmallIntegerField(verbose_name='支付方式', choices=pay_type_choices)
     user = models.ForeignKey(to='UserManager', to_field='id', on_delete=models.CASCADE)
     memer = models.ForeignKey(to='MemberModel', to_field='id', on_delete=models.CASCADE)
-
+    price = models.DecimalField(verbose_name='支付金额', max_digits=10, decimal_places=2, default=0)
+    pay_status_choices = ((0, '未支付'), (21, '已支付'))
+    pay_status = models.SmallIntegerField(verbose_name='支付状态', choices=pay_type_choices)
 
 class messagesLog(BaseModel):
     """人工消息记录"""

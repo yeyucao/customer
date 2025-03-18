@@ -1,0 +1,153 @@
+{% extends 'base_laout.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">会员中心</div>
+            <div class="panel-body">
+                <table id="m1" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>会员到期时间：</th>
+                        <th>{{ user.expiry_date }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>用户名：</td>
+                        <td>{{ user.login_name }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>账户余额：</td>
+                        <td>{{ user.account }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>
+                    <tr>
+                        <td>手机号：</td>
+                        <td>{{ user.login_name }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>邀请码：</td>
+                        <td>{{ user.invite_code }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>被邀请人：</td>
+                        <td>{{ user.inviter_code }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>绑定店铺最大数量：</td>
+                        <td>{{ user.band_shop_max }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">VIP 会员充值</div>
+                    <div class="panel-body">
+                        <form method="post" enctype="multipart/form-data" action="/index/pay/">
+                            {% csrf_token %}
+                            <input type="hidden" name="member_id">
+                            <div id="m2" style="width: 100%;height: 400px;">
+                                <div class="row row-pricelist">
+                                    {% for member in members %}
+                                        <div class="col-xs-6 col-sm-4 col-md-3">
+                                            <a href="javascript:clickPrice({{ member.id }});" class="price-item"
+                                               id="{{ member.id }}">
+                                                <div class="title">{{ member.name }}</div>
+                                                <div class="price"><em>￥</em><b>{{ member.price }}</b></div>
+                                                <div class="subtext">{{ member.remark }}</div>
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <h3>支付方式</h3>
+                                <div class="row row-recharge row-paytype" style="padding:10px 0;">
+                                    <div class="col-xs-6 col-sm-4 col-md-3 text-center">
+                                        <label class="active" data-value="aliPay">
+                                            <img src="{% static 'img/balance.png' %}" alt="">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row row-recharge" style="margin:20px -15px 0 -15px;">
+                                    <div class="col-xs-6 col-sm-4 col-md-4 col-lg-2">
+                                        <input type="submit" class="btn btn-info btn-recharge btn-block"
+                                               value="立即续费" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-sm-4">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">里程碑</div>
+                    <div class="panel-body">
+
+                        <div id="m3" style="width: 100%;height: 400px;"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            clickPrice(0)
+        })
+
+
+        function clickPrice(member_id) {
+            var arr = document.getElementsByClassName("price-item");
+            for (let i = 0; i < arr.length; i++) {
+                arr[i].onclick = function () {
+                    document.getElementsByName("member_id")[0].value = this.id;
+                    arr[i].classList.add("active");
+                    for (let j = 0; j < arr.length; j++) {
+                        if (j != i) {
+                            arr[j].classList.remove("active");
+                        }
+                    }
+                }
+            }
+        }
+
+
+    </script>
+{% endblock %}

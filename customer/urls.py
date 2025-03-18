@@ -23,8 +23,11 @@ from django.urls import path, include, re_path
 urlpatterns = [
     #    path("admin/", admin.site.urls),
 
+    path('index/pay_result/', index.pay_result),
+    path('index/pay/', index.pay),
     path('index/register/', index.index_register),
     path('index/login/', index.index_login),
+    path('index/logout/', index.logout),
     path('api/', index.AppletApi.isRequestUrl),
     # 登录
     path('bbs/login/', account.login),

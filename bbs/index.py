@@ -1,15 +1,19 @@
-import re
-import uuid
-from datetime import datetime, timedelta
+import os
+import random
+from datetime import  timedelta
+from urllib import parse
 
+from alipay import AliPay
 from django import forms
 from django.core.validators import RegexValidator
-from django.http import JsonResponse
+from django.db.transaction import atomic
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from bbs import models
 from bbs.models import UserManager
+from bbs.payment.utils import my_ali_pay, redKey
 from bbs.utils.bootstrap import BootStrapForm
 from bbs.utils.code import check_code
 from bbs.utils.encrypt import md5
@@ -17,6 +21,8 @@ from django.shortcuts import render, redirect
 from django.forms import widgets, model_to_dict
 from django.utils import timezone
 
+
+from customer import settings
 
 
 class IndexLoginRegister(BootStrapForm):
@@ -103,14 +109,12 @@ def index_login(request):
         if not user_manager_object:
             form.add_error("username", "用户名或密码错误")
             return render(request, 'index_login.html', {'form': form})
-
-        # 用户名和密码正确
-        # 网站生成随机字符串; 写到用户浏览器的cookie中；在写入到session中；
         request.session["info"] = {'id': user_manager_object.id, 'name': user_manager_object.login_name}
-        # session可以保存7天
         request.session.set_expiry(60 * 60 * 24)
+        user_manager_object.password = None
 
-        return render(request, 'register_status.html', {})
+        memberModel = models.MemberModel.objects.filter(is_delete__exact=1).values('id', 'name', 'price', 'remark')
+        return render(request, 'user_info.html', {'user': user_manager_object,'members':memberModel})
 
     return render(request, 'index_login.html', {'form': form})
 
@@ -141,7 +145,7 @@ def index_register(request):
         months_later = today + timedelta(days=1 * 30)
         expiry_date = months_later.strftime("%Y-%m-%d %H:%M:%S")
         band_shop_max = 100
-        user = models.UserManager.objects.create(login_name=login_name, password=password, expiry_date=expiry_date,band_shop_max=band_shop_max,inviter_code=inviter_code)
+        user = models.UserManager.objects.create(login_name=login_name, password=password, expiry_date=months_later,band_shop_max=band_shop_max,inviter_code=inviter_code)
         user_id = user.pk
         img, code_string = check_code()
         invite_code = code_string.upper()
@@ -219,3 +223,109 @@ class AppletApi(View):
         models.ShopManager.objects.create(shop_name=shop_name, type=type, is_delete=is_delete, user_id=user_id)
         return AppletApi.resJson(code=200, data='成功')
 
+
+def logout(request):
+    request.session.clear()
+    return redirect('/index/login/')
+
+
+def pay(request):
+    print(request.POST)
+    member_id_str = request.POST.get('member_id')
+    if member_id_str:
+        print(member_id_str)
+        member_id = int(member_id_str)
+        memberModel = models.MemberModel.objects.filter(is_delete__exact=1,id__exact=member_id).first()
+        if memberModel:
+            info = request.session.get('info')
+            order_no = timezone.now().strftime('%Y%m%d%H%M%S') + ''.join(map(str, random.sample(range(0, 9), 6)))
+            models.MemberRecord.objects.create(user_id=info.get('id'), memer_id=member_id, pay_type=1,order_no=order_no,price=memberModel.price,pay_status=0)
+            # 生成支付宝支付链接地址
+            notify_url = "http://127.0.0.1:8000/index/pay_result/"
+            alipay = AliPay(
+                appid=settings.ALI_PAY_APP_ID,
+                app_notify_url=None,
+                app_private_key_string=settings.ALIPAY_PRIVATE_KEY_STRING,
+                alipay_public_key_string=settings.ALIPAY_PUBLIC_KEY_STRING,
+                sign_type="RSA2",
+            )
+            ## 实例化订单
+            order_string = alipay.api_alipay_trade_page_pay(
+                subject=memberModel.remark,  ## 交易主题
+                out_trade_no=order_no,  ## 订单号
+                total_amount=str(memberModel.price),  ## 交易总金额
+                return_url=notify_url,  ##  请求支付，之后及时回调的一个接口
+                notify_url=None  ##  通知地址，
+            )
+            ##   发送支付请求
+            ## 请求地址  支付网关 + 实例化订单
+            result = "https://openapi-sandbox.dl.alipaydev.com/gateway.do?" + order_string
+            print(result)
+
+            return redirect(result)
+        else:
+            print(f'memberModel is None')
+            return JsonResponse(dict(ali_pay_url=""))
+
+    else:
+        print(f'member_id is None')
+    pass
+
+
+@csrf_exempt
+def pay_result(request):
+    """
+    前端同步回调通知（支付完成后，前端url会接收支付宝支付完成后回传的form参数，将其全部传给该接口进行验签），参数示例如下：
+    ?charset=utf-8&out_trade_no=20200808154711123456&method=alipay.trade.page.pay.return&total_amount=0.01&sign=FtDkDtsDE9dW3RB18BfiAeFqkSQAK......E1wE9tgsoUi50%2B0IH7w%3D%3D&trade_no=2020080622001460481436975535&auth_app_id=2016101000655892&version=1.0&app_id=2016101000655892&sign_type=RSA2&seller_id=2087811328364696&timestamp=2020-08-06+12%3A44%3A44
+    :return: 根据业务需求自定义返回信息
+    """
+    if request.method == "GET":
+        data = request.GET.dict()
+
+        ali_pay = AliPay(
+                appid=settings.ALI_PAY_APP_ID,
+                app_notify_url=None,
+                app_private_key_string=settings.ALIPAY_PRIVATE_KEY_STRING,
+                alipay_public_key_string=settings.ALIPAY_PUBLIC_KEY_STRING,
+                sign_type="RSA2",
+            )
+        sign = data.pop('sign', None)
+        success = ali_pay.verify(data, sign)
+        print("同步回调验签状态: ", success)
+        if success:
+            # 此处写支付验签成功的相关业务逻辑
+            return JsonResponse(dict(message="支付成功"))
+
+        return JsonResponse(dict(message="支付失败"))
+
+    return JsonResponse(dict(message="支付失败"))
+
+
+@csrf_exempt
+@atomic()
+def update_order(request):
+    """
+    支付成功后，支付宝服务器异步通知回调（用于修改订单状态）
+    :return: success or fail
+    """
+    if request.method == "POST":
+
+        body_str = request.body.decode('utf-8')
+        data = parse.parse_qs(body_str)
+        # data = parse.parse_qs(parse.unquote(body))  # 前端回传的url如果被编码，这里需要用unquote解码再转换成字典
+        data = {k: v[0] for k, v in data.items()}
+
+        ali_pay = my_ali_pay()
+        sign = data.pop('sign', None)
+        success = ali_pay.verify(data, sign)  # 返回验签结果, True/False
+        print("异步通知验证状态: ", success)
+        if success:
+            # 此处写支付验签成功修改订单状态相关业务逻辑
+            return HttpResponse('success')  # 返回success给支付宝服务器, 若支付宝收不到success字符会重复发送通知
+        return HttpResponse('fail')
+
+    return HttpResponse('fail')
+
+
+def payresult(request):
+    return render(request,"payresult.html")
