@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>电小服用户登陆</title>
+    <title>电小服用户注册</title>
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
     <style>
         .account {
@@ -26,9 +26,14 @@
 </head>
 <body>
 <div class="account">
-    <h2>管理员登录</h2>
+    <h2>用户注册</h2>
     <form method="post" novalidate>
         {% csrf_token %}
+        <div class="form-group">
+            <label>邀请码</label>
+            {{ form.inviter_code }}
+            <span style="color: red;">{{ form.inviter_code.errors.0 }}</span>
+        </div>
         <div class="form-group">
             <label>用户名</label>
             {{ form.login_name }}
@@ -36,8 +41,13 @@
         </div>
         <div class="form-group">
             <label>密码</label>
-            {{ form.password }}
-            <span style="color: red;">{{ form.password.errors.0 }}</span>
+            {{ form.password1 }}
+            <span style="color: red;">{{ form.password1.errors.0 }}</span>
+        </div>
+        <div class="form-group">
+            <label>确认密码</label>
+            {{ form.password2 }}
+            <span style="color: red;">{{ form.password2.errors.0 }}</span>
         </div>
         <div class="form-group">
             <label for="id_code">图片验证码</label>
@@ -51,7 +61,10 @@
                 </div>
             </div>
         </div>
-        <input type="submit" value="登 录" class="btn btn-primary">
+        <input type="submit" value="立即注册" class="btn btn-primary">
+        <a class="btn btn-success" href="/index/login/">
+                已有账号？立即登录
+            </a>
     </form>
 </div>
 

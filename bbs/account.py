@@ -51,7 +51,6 @@ def login(request):
         admin_object = models.Admin.objects.filter(**form.cleaned_data).first()
         if not admin_object:
             form.add_error("password", "用户名或密码错误")
-            # form.add_error("username", "用户名或密码错误")
             return render(request, 'login.html', {'form': form})
 
         # 用户名和密码正确

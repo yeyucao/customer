@@ -75,6 +75,8 @@ class UserManager(BaseModel):
     mobile = models.CharField(verbose_name='手机号', max_length=11, null=True, blank=True)
     account = models.DecimalField(verbose_name='账户余额', max_digits=10, decimal_places=2, default=0)
     expiry_date = models.DateTimeField(verbose_name="授权到期时间",null=True, blank=True)
+    invite_code = models.CharField(verbose_name='邀请码', max_length=22, null=True, blank=True)
+    inviter_code = models.CharField(verbose_name='被邀请人', max_length=22, null=True, blank=True)
     band_shop_max = models.SmallIntegerField(verbose_name='绑定店铺最大数量', default=1)
 
 class ShopManager(BaseModel):
@@ -89,6 +91,7 @@ class MemberModel(BaseModel):
     name = models.CharField(verbose_name='名称', max_length=22, null=True, blank=True)
     quantity = models.SmallIntegerField(verbose_name='数量(单位：月)',null=True, blank=True)
     price = models.DecimalField(verbose_name='价格', max_digits=10, decimal_places=2, default=0)
+    band_shop_max = models.SmallIntegerField(verbose_name='绑定店铺最大数量', default=1)
     remark  = models.CharField(verbose_name='备注', max_length=28, null=True, blank=True)
 
 class MemberRecord(BaseModel):
