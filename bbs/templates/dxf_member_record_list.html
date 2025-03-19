@@ -45,7 +45,6 @@
                         <th>支付状态</th>
                         <th>创建时间</th>
                         <th>支付时间</th>
-                        <th>操作</th>
 
                     </tr>
                     </thead>
@@ -61,9 +60,7 @@
                             <td>{{ obj.get_pay_status_display }}</td>
                             <td>{{ obj.creation_time|date:"Y-m-d H:i:s" }}</td>
                             <td>{{ obj.last_modify_time|date:"Y-m-d H:i:s" }}</td>
-                            <td>
-                                <a class="btn btn-primary btn-xs" href="/membermodel/{{ obj.id }}/edit/">修改</a>
-                            </td>
+
                         </tr>
                     {% endfor %}
                     </tbody>

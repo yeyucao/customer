@@ -49,10 +49,7 @@ def download_file(request):
         return render(request, '404.html')
     utilities = ZipUtilities()
     utilities.toZip(os.path.join(file_path, file_name), file_name)
-    # utilities.close()  # close this will result in failure downloading.
-    # utilities.close()
     response = StreamingHttpResponse(utilities.zip_file, content_type='application/zip')
-    # filename chinese will result in default filename, recommend aphlabetical here
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format("电小服.zip")
     return response
 
