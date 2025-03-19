@@ -102,8 +102,8 @@ class MemberRecord(BaseModel):
     user = models.ForeignKey(to='UserManager', to_field='id', on_delete=models.CASCADE)
     memer = models.ForeignKey(to='MemberModel', to_field='id', on_delete=models.CASCADE)
     price = models.DecimalField(verbose_name='支付金额', max_digits=10, decimal_places=2, default=0)
-    pay_status_choices = ((0, '未支付'), (21, '已支付'))
-    pay_status = models.SmallIntegerField(verbose_name='支付状态', choices=pay_type_choices)
+    pay_status_choices = ((0, '未支付'), (1, '已支付'))
+    pay_status = models.SmallIntegerField(verbose_name='支付状态', choices=pay_status_choices)
 
 class messagesLog(BaseModel):
     """人工消息记录"""

@@ -16,13 +16,21 @@ Including another URLconf
 """
 from django.conf import settings
 from django.views.static import serve as static_serve
-from django.conf.urls.static import static
-from bbs import views, account, index, down
+from bbs import views, account, index, down, dxf
 from django.urls import path, include, re_path
 
 urlpatterns = [
     #    path("admin/", admin.site.urls),
-
+    path('currentversion/<int:nid>/delete/', dxf.current_version_delete),
+    path('currentversion/<int:nid>/edit/', dxf.current_version_edit),
+    path('currentversion/add/', dxf.current_version_add),
+    path('currentversion/list/', dxf.current_version_list),
+    path('memberrecord/list/', dxf.member_record_list),
+    path('membermodel/<int:nid>/edit/', dxf.member_model_edit),
+    path('membermodel/list/', dxf.member_model_list),
+    path('usermanager/add/', dxf.user_add),
+    path('usermanager/<int:nid>/edit/', dxf.user_edit),
+    path('usermanager/list/', dxf.user_list),
     path('index/download_file/', down.download_file),
     path('index/pay_result/', index.pay_result),
     path('index/pay/', index.pay),
