@@ -22,9 +22,29 @@
             margin-top: 10px;
             text-align: center;
         }
+
+        .container {
+            display: flex; /* 启用Flexbox */
+            justify-content: flex-end; /* 将子元素推向容器的右端 */
+            align-items: flex-start; /* 将子元素推向容器的顶端 */
+        }
+
+        .flex-container {
+            display: flex; /* 启用Flexbox */
+            flex-direction: column; /* 设置子元素垂直排列 */
+        }
+
+        .top-right-button {
+            align-self: flex-end; /* 将按钮自身推向容器的右端 */
+        }
     </style>
 </head>
 <body>
+<div class="container">
+    <div class="flex-container">
+        <button onclick="downFile()" class="top-right-button btn btn-primary">下载电小服客户端</button>
+    </div>
+</div>
 <div class="account">
     <h2>用户登陆</h2>
     <form method="post" novalidate>
@@ -53,10 +73,33 @@
         </div>
         <input type="submit" value="登 录" class="btn btn-primary">
         <a class="btn btn-success" href="/index/register/">
-                注 册
-            </a>
+            注 册
+        </a>
     </form>
 </div>
 
 </body>
 </html>
+<script src="{% static 'js/jquery-3.6.3.min.js' %}"></script>
+{% block js %}
+    <script type="text/javascript">
+        function downFile() {
+            $.ajax({
+                url: "/api/" ,
+                data: {
+                    api_uri: "version_index"
+                },
+                type: "post",
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.code == 200) {
+                        arrVersion = res.data;
+                        version = arrVersion[0];
+                        window.location.href = version.download_url;
+                    }
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

@@ -36,6 +36,7 @@ class ZipUtilities:
             self.zip_file.close()
 
 
+
 def download_file(request):
 
     file_name = request.GET.get('finaName')
