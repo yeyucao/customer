@@ -112,3 +112,10 @@ class messagesLog(BaseModel):
     shop_user_id = models.SmallIntegerField(verbose_name='店铺用户ID', null=True, blank=True)
     receive_message = models.TextField(verbose_name='接受消息内容', null=True, blank=True)
     send_message = models.TextField(verbose_name='发送消息内容',  null=True, blank=True)
+
+class CurrentVersion(BaseModel):
+    """当前版本"""
+    old_version = models.CharField(verbose_name='原版本号', max_length=22, null=True, blank=True)
+    new_version = models.CharField(verbose_name='新版本号', max_length=22, null=True, blank=True)
+    download_url = models.CharField(verbose_name='下载地址', max_length=22, null=True, blank=True)
+    content = models.TextField(verbose_name='版本内容', null=True, blank=True)

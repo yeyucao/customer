@@ -12,7 +12,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from bbs import models
-from bbs.models import UserManager
+from bbs.models import UserManager, CurrentVersion
 from bbs.payment.utils import my_ali_pay
 from bbs.utils.bootstrap import BootStrapForm
 from bbs.utils.code import check_code
@@ -160,7 +160,7 @@ def index_register(request):
 class AppletApi(View):
 
     # Json
-    def resJson(code, data, safe=True):
+    def resJson(code, data, safe=False):
         """
            :param code: 200=>成功;-1->失败
            :param data: 返回的参数
@@ -178,7 +178,7 @@ class AppletApi(View):
         @require_GET
         :return: json
         """
-        url = request.POST.get('api_uri')
+        url = request.GET.get('api_uri')
 
         # 用户登录
         if url == 'user_login':
@@ -186,6 +186,10 @@ class AppletApi(View):
         # 店铺绑定
         elif url =='shop_bind':
             return AppletApi.shopBind(request)
+        # 获取客户端版本
+        elif url == 'version_index':
+            return AppletApi.getVersionIndex(request)
+        # 获取用户信息
         return AppletApi.resJson(code='-1', data='error')
 
 
@@ -222,6 +226,13 @@ class AppletApi(View):
         user_id = request.POST.get('user_id')
         models.ShopManager.objects.create(shop_name=shop_name, type=type, is_delete=is_delete, user_id=user_id)
         return AppletApi.resJson(code=200, data='成功')
+
+    def getVersionIndex(self):
+        current_versions = models.CurrentVersion.objects.filter(is_delete__exact=1).order_by('-id')[0:10]
+        current = []
+        for ret in current_versions:
+            current.append(model_to_dict(ret))
+        return AppletApi.resJson(code=200, data=current)
 
 
 def logout(request):
