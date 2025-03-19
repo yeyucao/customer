@@ -17,12 +17,13 @@ Including another URLconf
 from django.conf import settings
 from django.views.static import serve as static_serve
 from django.conf.urls.static import static
-from bbs import views, account, index
+from bbs import views, account, index, down
 from django.urls import path, include, re_path
 
 urlpatterns = [
     #    path("admin/", admin.site.urls),
 
+    path('index/download_file/', down.download_file),
     path('index/pay_result/', index.pay_result),
     path('index/pay/', index.pay),
     path('index/register/', index.index_register),

@@ -1,6 +1,6 @@
 import os
 import random
-from datetime import  timedelta
+from datetime import timedelta
 from urllib import parse
 
 from alipay import AliPay
@@ -20,7 +20,6 @@ from bbs.utils.encrypt import md5
 from django.shortcuts import render, redirect
 from django.forms import widgets, model_to_dict
 from django.utils import timezone
-
 
 from customer import settings
 
@@ -65,7 +64,6 @@ class IndexLoginRegister(BootStrapForm):
         return password2
 
 
-
 class IndexLogin(BootStrapForm):
     login_name = forms.CharField(
         label="请输入手机号",
@@ -103,9 +101,9 @@ def index_login(request):
             form.add_error("code", "验证码错误")
             return render(request, 'index_login.html', {'form': form})
 
-        user_manager_object  = models.UserManager.objects.filter(login_name__exact=form.cleaned_data['login_name']
-                                                                 , password__exact=form.cleaned_data['password']
-                                                                 , is_delete__exact=1).first()
+        user_manager_object = models.UserManager.objects.filter(login_name__exact=form.cleaned_data['login_name']
+                                                                , password__exact=form.cleaned_data['password']
+                                                                , is_delete__exact=1).first()
         if not user_manager_object:
             form.add_error("username", "用户名或密码错误")
             return render(request, 'index_login.html', {'form': form})
@@ -114,7 +112,7 @@ def index_login(request):
         user_manager_object.password = None
         user_manager_object.expiry_date = user_manager_object.expiry_date.strftime("%Y-%m-%d %H:%M:%S")
         memberModel = models.MemberModel.objects.filter(is_delete__exact=1).values('id', 'name', 'price', 'remark')
-        return render(request, 'user_info.html', {'user': user_manager_object,'members':memberModel})
+        return render(request, 'user_info.html', {'user': user_manager_object, 'members': memberModel})
 
     return render(request, 'index_login.html', {'form': form})
 
@@ -145,7 +143,8 @@ def index_register(request):
         months_later = today + timedelta(days=1 * 30)
         expiry_date = months_later.strftime("%Y-%m-%d %H:%M:%S")
         band_shop_max = 100
-        user = models.UserManager.objects.create(login_name=login_name, password=password, expiry_date=months_later,band_shop_max=band_shop_max,inviter_code=inviter_code)
+        user = models.UserManager.objects.create(login_name=login_name, password=password, expiry_date=months_later,
+                                                 band_shop_max=band_shop_max, inviter_code=inviter_code)
         user_id = user.pk
         img, code_string = check_code()
         invite_code = code_string.upper()
@@ -154,7 +153,6 @@ def index_register(request):
         return render(request, 'register_status.html', {})
 
     return render(request, 'index_register.html', {'form': form})
-
 
 
 class AppletApi(View):
@@ -178,20 +176,19 @@ class AppletApi(View):
         @require_GET
         :return: json
         """
-        url = request.GET.get('api_uri')
+        url = request.POST.get('api_uri')
 
         # 用户登录
         if url == 'user_login':
             return AppletApi.userLogin(request)
         # 店铺绑定
-        elif url =='shop_bind':
+        elif url == 'shop_bind':
             return AppletApi.shopBind(request)
         # 获取客户端版本
         elif url == 'version_index':
             return AppletApi.getVersionIndex(request)
         # 获取用户信息
         return AppletApi.resJson(code='-1', data='error')
-
 
     def userLogin(request):
         """
@@ -246,11 +243,12 @@ def pay(request):
     if member_id_str:
         print(member_id_str)
         member_id = int(member_id_str)
-        memberModel = models.MemberModel.objects.filter(is_delete__exact=1,id__exact=member_id).first()
+        memberModel = models.MemberModel.objects.filter(is_delete__exact=1, id__exact=member_id).first()
         if memberModel:
             info = request.session.get('info')
             order_no = timezone.now().strftime('%Y%m%d%H%M%S') + ''.join(map(str, random.sample(range(0, 9), 6)))
-            models.MemberRecord.objects.create(user_id=info.get('id'), memer_id=member_id, pay_type=1,order_no=order_no,price=memberModel.price,pay_status=0)
+            models.MemberRecord.objects.create(user_id=info.get('id'), memer_id=member_id, pay_type=1,
+                                               order_no=order_no, price=memberModel.price, pay_status=0)
             # 生成支付宝支付链接地址
             notify_url = "http://127.0.0.1:8000/index/pay_result/"
             alipay = AliPay(
@@ -299,18 +297,22 @@ def pay_result(request):
         print("同步回调验签状态: ", data)
         if success:
             # 修改订单状态
-            models.MemberRecord.objects.filter(order_no=data.get('out_trade_no')).update(pay_status=1,last_modify_time=timezone.now())
+            models.MemberRecord.objects.filter(order_no=data.get('out_trade_no')).update(pay_status=1,
+                                                                                         last_modify_time=timezone.now())
             record = models.MemberRecord.objects.filter(order_no__exact=data.get('out_trade_no')).first()
-            model =models.MemberModel.objects.filter(id__exact=record.memer_id).first()
+            model = models.MemberModel.objects.filter(id__exact=record.memer_id).first()
             user = models.UserManager.objects.filter(id__exact=record.user_id).first()
             months_later = user.expiry_date + timedelta(days=model.quantity * 30)
-            models.UserManager.objects.filter(id__exact=record.user_id).update(expiry_date=months_later,last_modify_time=timezone.now())
-            return render(request, 'payresult.html',{'remark':model.remark,
-                                                     'trade_no':data.get('out_trade_no'),
-                                                     'price':record.price,
-                                                      'last_modify_time':record.last_modify_time.strftime('%Y-%m-%d %H:%M:%S')})
+            models.UserManager.objects.filter(id__exact=record.user_id).update(expiry_date=months_later,
+                                                                               last_modify_time=timezone.now())
+            return render(request, 'payresult.html', {'remark': model.remark,
+                                                      'trade_no': data.get('out_trade_no'),
+                                                      'price': record.price,
+                                                      'last_modify_time': record.last_modify_time.strftime(
+                                                          '%Y-%m-%d %H:%M:%S')})
 
         return JsonResponse(dict(message="支付失败"))
 
     return JsonResponse(dict(message="支付失败"))
+
 
