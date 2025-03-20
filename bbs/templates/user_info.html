@@ -78,7 +78,7 @@
                             <div id="m2" style="width: 100%;height: 400px;">
                                 <div class="row row-pricelist">
                                     {% for member in members %}
-                                        <div class="col-xs-6 col-sm-4 col-md-3">
+                                        <div class="col-xs-6 col-sm-4">
                                             <a href="javascript:clickPrice({{ member.id }});" class="price-item"
                                                id="{{ member.id }}">
                                                 <div class="title">{{ member.name }}</div>
@@ -92,7 +92,7 @@
                                 <div class="row row-recharge row-paytype" style="padding:10px 0;">
                                     <div class="col-xs-6 col-sm-4 col-md-3 text-center">
                                         <label class="active" data-value="aliPay">
-                                            <img src="{% static 'img/balance.png' %}" alt="">
+                                            <img src="{% static 'img/aliPay.png' %}" alt="">
                                         </label>
                                     </div>
                                 </div>

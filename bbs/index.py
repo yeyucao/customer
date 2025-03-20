@@ -273,12 +273,9 @@ def pay(request):
 
             return redirect(result)
         else:
-            print(f'memberModel is None')
-            return JsonResponse(dict(ali_pay_url=""))
+            return render(request, 'error.html', {"msg": "错误提示：【没有对应的会员充值信息】"})
 
-    else:
-        print(f'member_id is None')
-    pass
+    return render(request, 'error.html', {"msg": "错误提示：【请选择会员充值】"})
 
 
 @csrf_exempt
