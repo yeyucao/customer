@@ -4,6 +4,8 @@ import zipstream
 from django.http import StreamingHttpResponse
 from django.shortcuts import render
 
+from customer.settings import FILE_DOWN_PATH
+
 
 class ZipUtilities:
     zip_file = None
@@ -36,7 +38,7 @@ def download_file(request):
     if not file_name:
         return render(request, '404.html')
     print(file_name)
-    file_path = os.path.dirname(os.path.abspath(__file__))
+    file_path = FILE_DOWN_PATH
     print(file_path)
     if not os.path.isfile(os.path.join(file_path, file_name)):
         return render(request, '404.html')
