@@ -139,10 +139,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "bbs/static")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-ALI_PAY_APP_ID="2021000146681663"
+ALI_PAY_APP_ID="2021005129640221"
 ALI_PAY_DEBUG=True
 ALI_PAY_CALL_BACK_URL="http://127.0.0.1:8000/index/pay_result/"
-ALI_PAY_GATEWAY_URL="https://openapi-sandbox.dl.alipaydev.com/gateway.do?"
+ALI_PAY_GATEWAY_URL="https://openapi.alipay.com/gateway.do?"
 
 ALIPAY_PUBLIC_KEY_STRING = """-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA23YI/mG9AH2/ekR708NYnhbsao5yjTetNunB3uhfGE+b3Bh0n4EGqRByIFzei25lvG0OAdmkeu9Eq7pOrOVh5jcIR6bzLxrGXKKbF9TeBLdXyJ7aPzuzPJGweYjL2i+8zIInsUNpz/pecm3NWN6U7vnZofhaKEOE/ykH+4OcL4EfVf27aBq/jXI5ZQBu9lwnVA75gBS3B9Hf+UliVBg1T+Mn5F6fxmsuB6ktvjjO0b+Qe62rPuRXP9Q5bAyBZxldKC8sneBVImW/QacKMNBtHjHcc37tUiwa7vQQnpFMnZbOsU3abbvPOeYvk4tJJphi7L6tEV+7NCLtZPg/1tZJkQIDAQAB
