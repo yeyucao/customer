@@ -70,6 +70,8 @@ class UserManagerAddModelForm(forms.ModelForm):
 
     def clean_invite_code(self):
         invite_code = self.cleaned_data.get('invite_code')
+        if not invite_code:
+            return invite_code
         if len(invite_code) > 6:
             raise forms.ValidationError("邀请码必须小于等于6位")
         elif len(invite_code) < 4:
