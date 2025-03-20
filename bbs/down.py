@@ -1,15 +1,8 @@
 import os
-import tempfile
-import zipfile
-from datetime import time
-from wsgiref.util import FileWrapper
-from django.http import HttpResponse, StreamingHttpResponse
-from django.shortcuts import render
 
-from bbs.views import bad_request
-
-import os
 import zipstream
+from django.http import StreamingHttpResponse
+from django.shortcuts import render
 
 
 class ZipUtilities:

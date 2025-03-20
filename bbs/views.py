@@ -1,8 +1,9 @@
-from django.core.exceptions import ValidationError
-from django.shortcuts import render, redirect, HttpResponse
-from bbs import models
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.shortcuts import redirect
+
+from bbs import models
 from bbs.utils.form import AdminEditModelForm, AdminModelForm
 from bbs.utils.pagination import Pagination
 

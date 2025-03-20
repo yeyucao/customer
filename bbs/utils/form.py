@@ -1,8 +1,9 @@
 from django import forms
-from bbs.utils.bootstrap import BootStrapModelForm, BootStrapForm
-from bbs.utils.encrypt import md5
-from bbs import models
 from django.core.exceptions import ValidationError
+
+from bbs import models
+from bbs.utils.bootstrap import BootStrapModelForm
+from bbs.utils.encrypt import md5
 
 
 class AdminModelForm(BootStrapModelForm):

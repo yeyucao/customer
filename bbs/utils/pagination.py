@@ -21,8 +21,9 @@ html页面：
             {{ page_string }}
         </ul>
 """
-from django.utils.safestring import mark_safe
 import copy
+
+from django.utils.safestring import mark_safe
 
 
 class Pagination(object):

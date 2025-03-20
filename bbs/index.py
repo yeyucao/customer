@@ -1,26 +1,22 @@
-import os
 import random
 from datetime import timedelta
-from urllib import parse
 
 from alipay import AliPay
 from django import forms
 from django.core.validators import RegexValidator
-from django.db.transaction import atomic
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.forms import model_to_dict
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from bbs import models
-from bbs.models import UserManager, CurrentVersion
+from bbs.models import UserManager
 from bbs.payment.utils import my_ali_pay
 from bbs.utils.bootstrap import BootStrapForm
 from bbs.utils.code import check_code
 from bbs.utils.encrypt import md5
-from django.shortcuts import render, redirect
-from django.forms import widgets, model_to_dict
-from django.utils import timezone
-
 from customer import settings
 
 

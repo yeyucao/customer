@@ -2,12 +2,12 @@ from io import BytesIO
 
 from django import forms
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
 
 from bbs import models
 from bbs.utils.bootstrap import BootStrapForm
 from bbs.utils.code import check_code
 from bbs.utils.encrypt import md5
-from django.shortcuts import render, redirect
 
 
 class LoginForm(BootStrapForm):
