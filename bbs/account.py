@@ -59,7 +59,7 @@ def login(request):
         # session可以保存7天
         request.session.set_expiry(60 * 60 * 24 * 7)
 
-        return redirect("/admin/list/")
+        return redirect("/usermanager/list/")
 
     return render(request, 'login.html', {'form': form})
 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>电小服智能客服</title>
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}">
     <style>
         .navbar {
             border-radius: 0;
@@ -53,9 +54,23 @@
     {% block content %}{% endblock %}
 </div>
 
+{% block js %}
+    <script src="{% static 'js/jquery-3.6.3.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datepicker/js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+    <script>
+        $(function () {
+            $('#id_expiry_date').datepicker({
+                format: 'yyyy-mm-dd',
+                time: 'hh:ii:ss',
+                startDate: '0',
+                language: "zh-CN",
+                autoclose: true
+            });
 
-<script src="{% static 'js/jquery-3.6.3.min.js' %}"></script>
-<script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
-{% block js %}{% endblock %}
+        })
+    </script>
+{% endblock %}
 </body>
 </html>
