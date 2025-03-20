@@ -18,6 +18,7 @@ from bbs.utils.bootstrap import BootStrapForm
 from bbs.utils.code import check_code
 from bbs.utils.encrypt import md5
 from customer import settings
+from customer.settings import ALI_PAY_CALL_BACK_URL, ALI_PAY_GATEWAY_URL
 
 
 class IndexLoginRegister(BootStrapForm):
@@ -245,8 +246,6 @@ def pay(request):
             order_no = timezone.now().strftime('%Y%m%d%H%M%S') + ''.join(map(str, random.sample(range(0, 9), 6)))
             models.MemberRecord.objects.create(user_id=info.get('id'), memer_id=member_id, pay_type=1,
                                                order_no=order_no, price=memberModel.price, pay_status=0)
-            # 生成支付宝支付链接地址
-            notify_url = "http://127.0.0.1:8000/index/pay_result/"
             alipay = AliPay(
                 appid=settings.ALI_PAY_APP_ID,
                 app_notify_url=None,
@@ -259,12 +258,12 @@ def pay(request):
                 subject=memberModel.remark,  ## 交易主题
                 out_trade_no=order_no,  ## 订单号
                 total_amount=str(memberModel.price),  ## 交易总金额
-                return_url=notify_url,  ##  请求支付，之后及时回调的一个接口
+                return_url=ALI_PAY_CALL_BACK_URL,  ##  请求支付，之后及时回调的一个接口
                 notify_url=None  ##  通知地址，
             )
             ##   发送支付请求
             ## 请求地址  支付网关 + 实例化订单
-            result = "https://openapi-sandbox.dl.alipaydev.com/gateway.do?" + order_string
+            result = ALI_PAY_GATEWAY_URL + order_string
             print(result)
 
             return redirect(result)
