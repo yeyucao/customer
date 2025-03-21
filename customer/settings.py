@@ -36,8 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "bbs.apps.BbsConfig",
-    "captcha" #验证码
+    "bbs.apps.BbsConfig"
 ]
 
 MIDDLEWARE = [
