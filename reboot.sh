@@ -15,4 +15,5 @@ echo -e '\n033[31m 重启uwsgi \033[0m]]'
 
 sleep 1
 
+
 ps -ef|grep dsx_uwsgi.ini | grep -v grep
