@@ -117,5 +117,5 @@ class CurrentVersion(BaseModel):
     """当前版本"""
     old_version = models.CharField(verbose_name='原版本号', max_length=22, null=True, blank=True)
     new_version = models.CharField(verbose_name='新版本号', max_length=22, null=True, blank=True)
-    download_url = models.CharField(verbose_name='下载地址', max_length=22, null=True, blank=True)
+    download_url = models.CharField(verbose_name='下载地址', max_length=64, null=True, blank=True)
     content = models.TextField(verbose_name='版本内容', null=True, blank=True)
