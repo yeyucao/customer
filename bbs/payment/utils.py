@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from alipay import AliPay  # python-alipay-sdk
+from alipay import AliPay
 from django.conf import settings
 
+
+merchant_private_key_string = "keys/alipay_private_key.txt"
+alipay_public_key_string = "keys/alipay_public_key.txt"
 
 def my_ali_pay(notify_url=None):
     """

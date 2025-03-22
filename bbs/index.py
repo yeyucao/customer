@@ -246,13 +246,7 @@ def pay(request):
             order_no = timezone.now().strftime('%Y%m%d%H%M%S') + ''.join(map(str, random.sample(range(0, 9), 6)))
             models.MemberRecord.objects.create(user_id=info.get('id'), memer_id=member_id, pay_type=1,
                                                order_no=order_no, price=memberModel.price, pay_status=0)
-            alipay = AliPay(
-                appid=settings.ALI_PAY_APP_ID,
-                app_notify_url=None,
-                app_private_key_string=settings.ALIPAY_PRIVATE_KEY_STRING,
-                alipay_public_key_string=settings.ALIPAY_PUBLIC_KEY_STRING,
-                sign_type="RSA2",
-            )
+            alipay =  my_ali_pay()
             ## 实例化订单
             order_string = alipay.api_alipay_trade_page_pay(
                 subject=memberModel.remark,  ## 交易主题
